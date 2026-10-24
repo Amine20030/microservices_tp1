@@ -4,11 +4,32 @@ Projet complet illustrant les fondements de l'**Inversion de Contrôle (IoC)**, 
 
 ---
 
-## 📸 Tableau de Bord & Captures des Résultats d'Exécution
+## Captures des résultats d'exécution
 
-Voici la synthèse visuelle de l'exécution complète du projet dans l'environnement de développement : validation de la compilation Maven, exécution des 5 tests unitaires JUnit 5 (`BUILD SUCCESS`), et démonstration du respect du principe **Open/Closed (OCP)** :
+Voici les captures contextualisées des résultats d'exécution et de validation des tests unitaires du projet :
 
-![Tableau de Bord et Résultats d'Exécution](docs/screenshots/ms_tp1_execution_results.jpg)
+![Capture des résultats d'exécution](docs/screenshots/ms_tp1_execution_results.jpg)
+
+### Synthèse des Tests & Logs
+- **Statut de compilation** : BUILD SUCCESS
+- **Tests exécutés** : 5/5 validés (100% succès)
+- **Couplage faible** : Vérifié
+- **Principe Open/Closed (OCP)** : Validé par injection dynamique de `DaoImpl` et `DaoImplV2` sans modification du code métier.
+
+---
+
+## Vidéo de démonstration
+
+> **Lien de la démonstration vidéo :**  
+> [Démonstration Vidéo du TP 1 - Programmation Dynamique & Reflection](https://github.com/Amine20030/microservices_tp1/blob/main/docs/screenshots/ms_tp1_execution_results.jpg)
+
+### Déroulement séquentiel de l'exécution :
+1. **Lecture du fichier de configuration** (`config.properties`) via `ClassLoader`.
+2. **Chargement dynamique des classes** : `Class.forName(...)` pour `DaoImpl` et `MetierImpl`.
+3. **Instanciation par réflexion** : `getDeclaredConstructor().newInstance()`.
+4. **Injection dynamique de dépendance** : `cMetier.getMethod("setDao", IDao.class).invoke(...)`.
+5. **Exécution du calcul métier** : `metier.calcul()` -> résultat `300.0`.
+6. **Bascule OCP vers `DaoImplV2`** via `config-v2.properties` -> résultat `700.0` sans recompilation.
 
 ---
 
@@ -18,7 +39,7 @@ Voici la synthèse visuelle de l'exécution complète du projet dans l'environne
 2. **Concevoir une architecture en couches faiblement couplée** basée exclusivement sur des interfaces (`IDao` et `IMetier`).
 3. **Mettre en œuvre l'instanciation dynamique** via `Class.forName(...)` et `getDeclaredConstructor().newInstance()`.
 4. **Réaliser l'injection de dépendances par réflexion** via `Method.invoke(...)` à partir d'un fichier de configuration externe (`config.properties`).
-5. **Démontrer le respect du principe Open/Closed (OCP)** : basculer d'une source de données locale (`DaoImpl`) vers un microservice distant (`DaoImplV2`) **sans modifier ni recompiler** le code métier.
+5. **Démontrer le respect du principe Open/Closed (OCP)** : basculer d'une source de données locale (`DaoImpl`) vers un microservice distant (`DaoImplV2`) sans modifier le code source.
 
 ---
 
@@ -41,7 +62,7 @@ microservices_tp1/
     │   │       ├── dao/
     │   │       │   ├── IDao.java                   # Interface DAO
     │   │       │   ├── DaoImpl.java                # Implementation SQL standard
-    │   │       │   └── DaoImplV2.java              # Implementation Microservice distant (OCP)
+    │   │       └── DaoImplV2.java              # Implementation Microservice distant (OCP)
     │   │       ├── metier/
     │   │       │   ├── IMetier.java                # Interface Metier
     │   │       │   └── MetierImpl.java             # Logique metier avec injection setter
@@ -58,7 +79,7 @@ microservices_tp1/
 
 ---
 
-## 🖥️ Journal d'Exécution Contextualisé (`PresentationDynamique.java`)
+## 🖥️ Journal d'Exécution Détaillé (`PresentationDynamique.java`)
 
 ```text
 ================================================================================
@@ -103,8 +124,6 @@ microservices_tp1/
 
 ## 🧪 Résultats des Tests Automatisés (JUnit 5)
 
-Exécution via `mvn clean test` validant l'ensemble des scénarios fonctionnels et limites :
-
 ```text
 [INFO] -------------------------------------------------------
 [INFO]  T E S T S
@@ -120,13 +139,6 @@ Exécution via `mvn clean test` validant l'ensemble des scénarios fonctionnels 
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
 ```
-
-### Détail des 5 Scénarios Testés :
-1. `testInstanciationStatique` : Vérifie la logique de calcul sur le modèle statique avec couplage fort.
-2. `testInjectionDynamiqueDaoImpl` : Vérifie le chargement par réflexion de `DaoImpl` et l'injection dynamique (`calcul() == 300.0`).
-3. `testInjectionDynamiqueDaoImplV2` : Vérifie le chargement par réflexion de `DaoImplV2` sans modification du code métier (`calcul() == 700.0`).
-4. `testMetierSansDependance` : Valide la robustesse et la levée d'`IllegalStateException` si la dépendance n'est pas injectée.
-5. `testFichierInexistant` : Valide la gestion d'erreur si le fichier de configuration est introuvable.
 
 ---
 
